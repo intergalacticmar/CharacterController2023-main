@@ -38,7 +38,15 @@ public class TPSController : MonoBehaviour
         _horizontal = Input.GetAxisRaw("Horizontal");
         _vertical = Input.GetAxisRaw("Vertical");
 
+        if(Input.GetButton("Fire2"))
+       {
+        AimMovement();
+       }
+       else
+       {
         Movement();
+       }
+       
         Jump();
     }
 
@@ -58,6 +66,24 @@ public class TPSController : MonoBehaviour
             _controller.Move(moveDirection.normalized * _playerSpeed * Time.deltaTime);
         }
     }
+
+        void AimMovement()
+    {
+        Vector3 direction = new Vector3(_horizontal, 0, _vertical);
+
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
+        float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _camera.eulerAngles.y, ref turnSmoothVelocity, turnSmoothTime);
+
+        transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
+
+        if(direction != Vector3.zero)
+        {
+            Vector3 moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+
+            _controller.Move(moveDirection.normalized * _playerSpeed * Time.deltaTime);
+        }
+    }
+
 
     void Jump()
     {
